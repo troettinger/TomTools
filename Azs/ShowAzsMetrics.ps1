@@ -49,7 +49,7 @@ write-host "Number of Node:" ($nodes) -ForegroundColor Yellow
 Write-host "_________________________________________________________________________________"
 
 # Calculate Total Number of virtual cores (Ratio 1:8 - logical to virtual)
-write-host "Number of total virtual cores:" ($nodes * $PCore  * 8) -ForegroundColor Yellow
+write-host "Number of total virtual cores:" ($PCore  * 8) -ForegroundColor Yellow
 
 # Print NUmber of Reserved Virtual Cores
 write-host "Number of reserved virtual cores:" ($RCore) -ForegroundColor Yellow
