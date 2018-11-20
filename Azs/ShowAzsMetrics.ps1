@@ -55,18 +55,18 @@ write-host "Number of total virtual cores:" ($PCore  * 8) -ForegroundColor Yello
 write-host "Number of reserved virtual cores:" ($RCore) -ForegroundColor Yellow
 
 # Calculate Total Number of available virtual cores for users Day 0 (Ratio 1:8 - logical to virtual)
-write-host "Number of avilable virtual cores - Day 0:" ($PCore * 8 - $Rcore) -ForegroundColor Green
+write-host "Number of available virtual cores - Day 0:" ($PCore * 8 - $Rcore) -ForegroundColor Green
 
 Write-host "_________________________________________________________________________________"
 
 # Calculate Scale Unit Total Memory
-write-host "Scale Unit Total Memory in GB:" ($nodes * $PMemory) -ForegroundColor Yellow
+write-host "Scale Unit Total Memory in GB:" ($PMemory) -ForegroundColor Yellow
 
 # Print NUmber of Reserved Memory
 write-host "Reserved Memory in GB:" ($RMemory) -ForegroundColor Yellow
 
 # Calculate available Memory Day 0
-write-host "Total Available User Memory in GB - Day 0:" ($nodes * $PMemory - $RMemory) -ForegroundColor Green
+write-host "Total Available User Memory in GB - Day 0:" ($PMemory - $RMemory) -ForegroundColor Green
 
 # Used Memory from HRP
 write-host "Current Total Used Memory in GB:" ($RUsed.Value) -ForegroundColor Green
