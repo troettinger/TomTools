@@ -6,6 +6,7 @@ $PlanName = Read-Host "Enter New Plan Name"
 $RGName = Read-Host "Enter New Resource Group Name"
 
 
+
 #Add Environment & Authenticate
 Add-AzureRmEnvironment -Name AzureStackAdmin -ARMEndpoint https://adminmanagement.$RegionName.$FQDN |Out-Null
 Login-AzureRmAccount -Environment AzureStackAdmin -TenantId $TenantID |Out-Null
@@ -28,14 +29,22 @@ $ResoureGroup=New-AzureRmResourceGroup -Name $RGName -Location local
 $Plan=New-AzsPlan -Name $PlanName -ResourceGroupName $ResoureGroup.ResourceGroupName -DisplayName SamplePlan -QuotaIds $quota
 
 #Create Offer
-$Offer=New-AzsOffer -Name $OfferName-DisplayName SampleOffer -ResourceGroupName $ResoureGroup.ResourceGroupName -BasePlanIds $plan.Id
+$Offer=New-AzsOffer -Name $OfferName -DisplayName SampleOffer -ResourceGroupName $ResoureGroup.ResourceGroupName -BasePlanIds $plan.Id
 
 #Make Offer Public
 Set-AzsOffer -Name $offer.Name -State public -ResourceGroupName $ResoureGroup.ResourceGroupName
 
 
-#Optinal - Create Subcription
-#New-AzsUserSubscription -OfferId $Offer.Id -Owner thoroet@fabrikam.com -DisplayName MyFreeIgniteSubscription
+#Create Subcription
+$sub=New-AzsUserSubscription -OfferId $Offer.Id -Owner thoroet@fabrikam.com -DisplayName MyFreeIgniteSubscription
+$Id=$sub.SubscriptionId
+
+#Login into the Tenant Subscription as Owner
+Add-AzureRmEnvironment -Name AzureStackUser -ARMEndpoint https://management.$RegionName.$FQDN |Out-Null
+Login-AzureRmAccount -Environment AzureStackUser  |Out-Null
+
+#RBAC Additional User
+New-AzureRmRoleAssignment -SignInName "bob@fabrikam.com" -RoleDefinitionName Contributor -Scope "/subscriptions/$id"
 
 
 
