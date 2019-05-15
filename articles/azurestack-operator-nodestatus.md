@@ -23,9 +23,10 @@ Applies to: Azure Stack build 1808, 1809 and 1811
 
 ## **Recommended Steps**
 
-Before applying the follwing steps ensure that no node operation is currently running!
+Before applying the follwing steps ensure that no opeartion is currently in progress. (Update endpoint to match your environment)
 
 1. Open PowerShell and add your Azure Stack environment. (This requires Azure Stack PowerShell to be installed on your computer)
+
 
  ```powershell
 Add-AzureRmEnvironment -Name AzureStack -ARMEndpoint https://adminmanagement.local.azurestack.external
