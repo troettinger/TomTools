@@ -39,6 +39,15 @@ Set-AzsOffer -Name $offer.Name -State public -ResourceGroupName $ResoureGroup.Re
 $sub=New-AzsUserSubscription -OfferId $Offer.Id -Owner thoroet@fabrikam.com -DisplayName MyFreeIgniteSubscription
 $Id=$sub.SubscriptionId
 
+# Create AddOn Plan and assign to single subscription
+#1 Create new Plan that will be used as add on Plan, using same resources & Quotas as base plan
+$PlanAddOn=New-AzsPlan -Name "MyAddOn" -ResourceGroupName $ResoureGroup.ResourceGroupName -DisplayName MyAddOnPlan -QuotaIds $quota
+#2 Create AddOn PLan definition Object
+$addondef=New-AzsAddonPlanDefinitionObject -PlanId $planAddOn.Id -MaxAcquisitionCount 1
+#3Assign AddOn Plan to Subscription
+New-AzsSubscriptionPlan -PlanId $addondef.PlanId -TargetSubscriptionId a5148faf-de4b-413e-a820-df440bf0e074 
+
+
 #Login into the Tenant Subscription as Owner
 Add-AzureRmEnvironment -Name AzureStackUser -ARMEndpoint https://management.$RegionName.$FQDN |Out-Null
 Login-AzureRmAccount -Environment AzureStackUser  |Out-Null
