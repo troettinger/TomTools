@@ -248,7 +248,21 @@ $virtualMachine | Get-VMNetworkAdapter | ? SwitchName -eq $VirtualSwitchName | S
                 Write-Output "Running Tools Installation"
 
                  Invoke-Command -Session $psSession -ScriptBlock {
+
                         
+
+                        #Test Internet Connecvtivity
+                        $Validator1=Test-NetConnection -ComputerName github.com  -Port 443
+                        $Validator2=Test-NetConnection -ComputerName the.earth.li  -Port 443
+                        $Validator3=Test-NetConnection -ComputerName powershellgallery.com  -Port 443
+                        
+                        
+                        If($Validator1.TcpTestSucceeded -ne $true -and $Validator2.TcpTestSucceeded -ne $true -and $Validator3.TcpTestSucceeded -ne $true)
+                        {
+                        write-output "There is no internet access. Tools installation was skipped please use the guidanceto install tools for disconnected environments"
+                        }
+                        else
+                        {
                         #Trust PS Gallery
                         Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
                         
@@ -283,6 +297,9 @@ $virtualMachine | Get-VMNetworkAdapter | ? SwitchName -eq $VirtualSwitchName | S
                         #Download $ Install Azure CLI
                         Invoke-WebRequest -Uri "https://aka.ms/installazurecliwindows" -OutFile c:\tools\AzureCLI.msi
                         c:\tools\AzureCLI.msi /quiet
+
+                        }
+                        
 
                     }
                 }
