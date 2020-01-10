@@ -32,7 +32,7 @@ $wsus = Get-WSUSServer
 $wsusConfig = $wsus.GetConfiguration()
  
 #Set to download updates from Microsoft Updates
-$null = Set-WsusServerSynchronization
+$null = Set-WsusServerSynchronization -SyncFromMU
  
 #Set Update Languages to English and save configuration settings
 $wsusConfig.AllUpdateLanguagesEnabled = $false
