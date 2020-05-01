@@ -17,7 +17,6 @@
 
 ## Samples
 
-
 #### - Secure Operator Role grants the same permission as the Onwer Role except the permission to create or update any user subscription.
 
 ## How to use
@@ -26,8 +25,8 @@
 #### - PowerShell Core - https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7#powershell-core
 #### - Azure Stack Powershell AZ - https://docs.microsoft.com/en-us/azure-stack/operator/powershell-install-az-module?view=azs-2002
 
-## Example
-### CreateNewRole.ps1
+### Example
+#### CreateNewRole.ps1
 
 ## Aditional Information
 
