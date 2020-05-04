@@ -7,12 +7,16 @@
       "*"
     ],
     "NotActions": [
-        "Microsoft.Subscriptions.Admin/subscriptions/write"
+      "Microsoft.Subscriptions.Admin/subscriptions/write",
+      "Microsoft.Authorization/*/Delete",
+      "Microsoft.Authorization/*/Write",
+      "Microsoft.Authorization/elevateAccess/Action" 
+
     ],
     "DataActions": null,
     "NotDataActions": null,
     "AssignableScopes": [
-      "/subscriptions/48826980-7bbd-4bf9-a3ff-362afec37ce7"
+      "/subscriptions/48826980-7bbd-4bf9-a3ff-362afec37ce7"  
     ]
   } 
   
