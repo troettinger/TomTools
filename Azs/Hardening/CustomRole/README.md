@@ -8,7 +8,7 @@
 
 ## Best Practices
 
-### - The Owner permissions to the deafult provider subscription should only be granded to a single user with a secure password and locked away.
+### - The Owner permissions to the deafult provider subscription should only be granted to a single user with a secure password and locked away.
 ### - Create custom roles with only permissions required for the day to day operations
 ### - Use strong passwords
 ### - Multi Factor authentication should be enabled for all users having access to the default provider subscription
