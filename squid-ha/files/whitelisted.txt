@@ -1,0 +1,76 @@
+## Identity
+# Azure
+login.windows.net
+login.microsoftonline.com
+graph.windows.net
+secure.aadcdn.microsoftonline-p.com
+www.office.com
+management.core.windows.net
+management.azure.com
+.msftauth.net
+.msauth.net
+.msocdn.com
+
+# Azure Gov
+login.microsoftonline.us
+
+# Azure china
+login.chinacloudapi.cn
+graph.chinacloudapi.cn
+
+# Azure Germany
+login.microsoftonline.de
+graph.cloudapi.de
+portal.office.de
+
+## Marketplace syndication
+# Azure
+management.azure.com
+.blob.core.windows.net
+.azureedge.net
+
+# Azure Gov
+management.usgovcloudapi.net
+.blob.core.usgovcloudapi.net
+
+# Azure China 21Vianet
+management.chinacloudapi.cn
+.blob.core.chinacloudapi.cn
+
+# Patch and update
+.azureedge.net
+aka.ms
+
+## Registration
+# Azure
+management.azure.com
+
+# Azure Gov
+management.usgovcloudapi.net
+
+# Azure China 21Vianet
+management.chinacloudapi.cn
+
+## Usage
+# Azure
+.trafficmanager.net
+
+# Azure Gov
+.usgovtrafficmanager.net
+
+# Azure China 21Vianet
+.trafficmanager.cn
+
+# Windows Defender
+.wdcp.microsoft.com
+.wdcpalt.microsoft.com
+.wd.microsoft.com
+.update.microsoft.com
+.download.microsoft.com
+crl.microsoft.com
+www.microsoft.com
+secure.aadcdn.microsoftonline-p.com
+
+azsdiagprdwestusfrontend.westus.cloudapp.azure.com
+azsdiagppelocalwestus02.blob.core.windows.net
+azsdiagppewestusfrontend.westus.cloudapp.azure.com

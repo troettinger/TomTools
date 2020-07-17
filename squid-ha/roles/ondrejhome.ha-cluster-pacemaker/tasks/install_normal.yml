@@ -1,0 +1,29 @@
+---
+- name: Install libselinux-python to work with SELinux setting
+  yum:
+    name: 'libselinux-python'
+    state: 'installed'
+  when: not (ansible_distribution in ['RedHat','CentOS'] and ansible_distribution_major_version == '8')
+
+- name: Install Pacemaker cluster packages to all nodes
+  yum:
+    name: "{{ pacemaker_packages }}"
+    state: 'installed'
+
+- name: Install firewall packages
+  yum:
+    name: '{{ firewall_packages }}'
+    state: 'installed'
+  when: cluster_firewall|bool
+
+- name: Install package(s) for fence_xvm
+  yum:
+    name: "{{ fence_xvm_packages }}"
+    state: 'installed'
+  when: cluster_configure_fence_xvm|bool
+
+- name: Install package(s) for fence_kdump
+  yum:
+    name:  "{{ fence_kdump_packages }}"
+    state: 'installed'
+  when: cluster_configure_fence_kdump|bool

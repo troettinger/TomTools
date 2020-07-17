@@ -1,0 +1,150 @@
+---                                                                                                 
+- hosts: squid
+  remote_user: root
+  vars:
+    ca_file_path: '{{ ssl_ca_bundle | default("/tmp/squid-ca.pem", true)}}'
+    ca_file_name: '{{ ca_file_path | basename }}'
+    ca_dir_name: '{{ ca_file_path | dirname }}'
+    squid_conf: '{{ squid_config | default("/etc/squid/squid.conf", true) }}'
+    squid_port_var: '{{ squid_port | default("3128", true) }}'
+    ca_destination: '{{ ssl_ca_destination | default("/etc/squid/certs", true) }}'
+    select_crypto_backend: '{{ crypto_backend | default("auto", true)}}'
+    ssl_db_dir_var: '{{ ssl_db_dir | default("/var/lib/ssl_db", true) }}'
+  tasks:
+    - name: Create CA dir if missing
+      file:
+        path: '{{ ca_dir_name }}'
+        state: directory
+        mode: '0700'
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Check if CA exists
+      stat:
+        path: '{{ ca_file_path }}'
+      register: cafileexists
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Create temporary directory for CA files
+      tempfile:
+        state: directory
+        suffix: build
+      when: cafileexists.stat.exists == False
+      register: tempdircreated
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate CA privatekey
+      openssl_privatekey:
+        path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+      register: cagenerated
+      delegate_to: 127.0.0.1
+      run_once: true
+      when: tempdircreated.changed
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate CA CSR
+      openssl_csr:
+        path: '{{ tempdircreated.path }}/ca_csr.csr'
+        privatekey_path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+        subject:
+          commonName: '{{ common_name }}'
+        useCommonNameForSAN: no
+        basic_constraints:
+        - 'CA:TRUE'
+        basic_constraints_critical: yes
+      when: cagenerated.changed
+      register: csrgenerated
+      run_once: true
+      delegate_to: 127.0.0.1
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate selfsigned CA certificate
+      openssl_certificate:
+        path: '{{ tempdircreated.path }}/ca_cert.pem'
+        csr_path: '{{ tempdircreated.path }}/ca_csr.csr'
+        privatekey_path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+        provider: selfsigned
+        selfsigned_digest: sha256
+        select_crypto_backend: '{{ select_crypto_backend }}'
+      when: csrgenerated.changed
+      register: certgenerated
+      run_once: true
+      delegate_to: 127.0.0.1
+
+    - name: Remove file (delete file)
+      file:
+        path: '{{ tempdircreated.path }}/ca_csr.csr'
+        state: absent
+      when: certgenerated.changed
+      delegate_to: 127.0.0.1
+      register: removedcsr
+      run_once: true
+
+    - name: Combine CA cert and key
+      assemble:
+        src: '{{ tempdircreated.path }}'
+        dest: '{{ ca_file_path }}'
+      when: removedcsr.changed
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Install firewalld
+      package:
+        name: firewalld
+        state: present
+
+    - name: Enable firewalld
+      service:
+        state: started
+        name: firewalld
+        enabled: yes
+
+    - name: Install Squid proxy server
+      package:
+        name: squid
+        state: present
+      register: squidPackage
+
+    - name: Redirect port 443 to 3129
+      firewalld:
+        rich_rule: rule family=ipv4 forward-port port=443 protocol=tcp to-port=3129
+        zone: public
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Redirect port 80 to 3130
+      firewalld:
+        rich_rule: rule family=ipv4 forward-port port=80 protocol=tcp to-port=3130
+        zone: public
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    - name: Create certs dir
+      file:
+        path: '{{ ca_destination }}'
+        state: directory
+        mode: '0711'
+        owner: '{{ squid_username }}'
+
+    - name: Copy CA certificate
+      copy:
+        src: '{{ ca_file_path }}'
+        dest: '{{ ca_destination }}/{{ ca_file_name }}'
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+        mode: '0640'
+
+    - name: Check ssl_db dir
+      stat:
+        path: '{{ ssl_db_dir_var }}'
+      register: ssldb
+
+    - name: Initialize ssl_db dir
+      command: /usr/lib64/squid/security_file_certgen -c -s '{{ ssl_db_dir_var }}' -M 4MB
+      when: ssldb.stat.exists == False
+
+    - name: Enable squid service
+      service:
+        state: started
+        name: squid
+        enabled: yes

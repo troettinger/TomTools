@@ -1,0 +1,153 @@
+---
+- name: Check if cluster consist of at least 2 nodes
+  fail:
+    msg: 'Cluster must have at least 2 members'
+  when: play_hosts|count() < 2
+  run_once: true
+
+- name: Include distribution version specific variables - RHEL/CentOS
+  include_vars: "el{{ ansible_distribution_major_version }}.yml"
+  when: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
+
+- name: Include distribution version specific variables - Fedora
+  include_vars: "fedora{{ ansible_distribution_major_version }}.yml"
+  when: ansible_distribution == 'Fedora'
+
+- name: (RHEL) enable repositories
+  include_tasks: rhel_repos.yml
+  when: ansible_distribution == 'RedHat'
+
+- name: (CentOS) enable repositories
+  include_tasks: centos_repos.yml
+  when: ansible_distribution == 'CentOS'
+
+- name: Install packages from local media
+  include_tasks: install_local_media.yml
+  when: use_local_media|bool
+
+- name: Install packages from system defined repositories
+  include_tasks: install_normal.yml
+  when: not use_local_media|bool
+
+- name: Remove 127.0.0.1 to hostname mapping in /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^127.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.*{{ansible_hostname}}$"
+    state: absent
+
+# TODO allow to choose if to use FQDN or just short hostname, defaulting to short hostname
+# WARNING: the 'ansible_fqdn' is resolved from /etc/hosts file! If you change hostname
+# of machine through /etc/hosts the ansible will pick it up and use it!
+- name: Add hosts to /etc/hosts (using default (GW) IPv4 address)
+  lineinfile:
+    dest: '/etc/hosts'
+    regexp: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} "
+    line: >
+      {{ hostvars[item]['ansible_default_ipv4']['address'] }}
+      {{ hostvars[item]['ansible_fqdn'].split('.')[0] }}
+  with_items: "{{ play_hosts }}"
+  when: hostvars[item]['ansible_'+cluster_net_iface] is not defined
+
+- name: Add hosts to /etc/hosts (using alternative interface)
+  lineinfile:
+    dest: '/etc/hosts'
+    regexp: "{{ hostvars[item]['ansible_'+cluster_net_iface]['ipv4']['address'] }} "
+    line: >
+      {{ hostvars[item]['ansible_'+cluster_net_iface]['ipv4']['address'] }}
+      {{ hostvars[item]['ansible_fqdn'].split('.')[0] }}
+  with_items: "{{ play_hosts }}"
+  when: hostvars[item]['ansible_'+cluster_net_iface] is defined
+
+- name: Create cluster system group
+  group:
+    name: "{{ cluster_group }}"
+    state: 'present'
+
+- name: Create cluster system user
+  user:
+    name: "{{ cluster_user }}"
+    state: 'present'
+    password: >-
+      {{ cluster_user_pass |
+      password_hash('sha512', ansible_hostname|replace('-','x') |
+      truncate(16, True, '', 0)) }}
+    groups: "{{ cluster_group }}"
+    comment: 'HA Cluster Administrator'
+
+- name: Enable/Disable PCSD web GUI
+  lineinfile:
+    dest: '/etc/sysconfig/pcsd'
+    regexp: 'PCSD_DISABLE_GUI=.*'
+    line: "PCSD_DISABLE_GUI={{ enable_pcsd_gui|bool|ternary('false','true') }}"
+  when: enable_pcsd_gui != 'nochange'
+
+- name: Enable and start PCSD service
+  service:
+    name: 'pcsd'
+    enabled: true
+    state: 'started'
+
+- name: Setup firewall for RHEL/CentOS systems
+  include_tasks: "firewall-el{{ ansible_distribution_major_version }}.yml"
+  when:
+    - cluster_firewall|bool
+    - ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
+
+- name: Setup firewall for Fedora systems
+  include_tasks: "firewall-fedora{{ ansible_distribution_major_version }}.yml"
+  when: cluster_firewall|bool and ansible_distribution == 'Fedora'
+
+- name: Authorize cluster nodes
+  pcs_auth:
+    node_name: "{{ hostvars[item]['ansible_fqdn'].split('.')[0] }}"
+    username: "{{ cluster_user }}"
+    password: "{{ cluster_user_pass }}"
+  with_items: "{{ play_hosts }}"
+
+- name: Setup cluster
+  pcs_cluster:
+    node_list: "{% for item in play_hosts %}{{ hostvars[item]['ansible_hostname'] }} {% endfor %}"
+    cluster_name: "{{ cluster_name }}"
+    transport: "{{ cluster_transport }}"
+    allowed_node_changes: "{% if allow_cluster_expansion|bool %}add{% else %}none{% endif %}"
+  run_once: true
+
+- name: Start cluster services on all nodes
+  service:
+    name: "{{ item }}"
+    state: 'started'
+  with_items:
+    - pacemaker
+    - corosync
+
+- name: Enable cluster services on boot
+  service:
+    name: "{{ item }}"
+    enabled: true
+  when: cluster_enable_service|bool
+  with_items:
+    - pacemaker
+    - corosync
+
+### fencing setup
+- name: Setup automatic fence_xvm
+  include_tasks: fence_xvm.yml
+  when: cluster_configure_fence_xvm is defined and cluster_configure_fence_xvm|bool
+
+- name: Setup fence_vmware_soap
+  include_tasks: fence_vmware_soap.yml
+  when: cluster_configure_fence_vmware_soap is defined and cluster_configure_fence_vmware_soap|bool
+
+- name: Setup fence_kdump
+  include_tasks: fence_kdump.yml
+  when: cluster_configure_fence_kdump is defined and cluster_configure_fence_kdump|bool
+
+- name: Setup custom fence devices
+  include_tasks: fence_custom.yml
+
+- name: Disable stonith
+  pcs_property:
+    name: 'stonith-enabled'
+    value: 'false'
+  run_once: true
+  when: enable_stonith is not defined or not enable_stonith|bool

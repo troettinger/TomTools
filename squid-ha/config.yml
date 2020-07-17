@@ -1,0 +1,77 @@
+---
+# The VIP for the squid proxy
+cluster_vip: 10.78.220.200 
+cluster_vip_mask: 24
+
+# This should be a CA certificate and the CA private key concatenated
+# into one file. The key needs to be unencrypted. If this file does not
+# exist, a new CA will be generated.
+ssl_ca_bundle: /tmp/certs/ca.pem
+
+# This is the install directory for the above mentioned CA bundle.
+ssl_ca_destination: /etc/squid/certs
+
+
+# These options are used to automatically generate a new CA
+# They are ignored if you specified ssl_ca_bundle above
+crypto_backend: auto
+common_name: Squid CA
+
+
+# The user under which the proxy server runs
+squid_username: squid
+
+
+# Squid config options
+localnets:
+  - 10.78.220.0/24
+  - 192.168.100.0/24
+  - 10.10.10.0/24
+
+ssl_ports:
+  - 443
+
+safe_ports:
+  - 80
+  - 443
+
+squid_http_port: 3130
+squid_https_port: 3129
+squid_control_port: 3128
+
+# Squid intercept method. Options are: splice, bump
+#
+# splice: TCP tunnel. Squid looks at SNI header, and simply creates a TCP tunnel
+# to the destination.
+#
+# bump: squid intercepts the packet, automatically generates a certificate to
+# mimic the destination site, and does the request on behalf of the client. The CA
+# used by squid to generate the certificates, must be trusted by all clients.
+#
+# NOTE: hosts added to the tunneled.txt whitelist, will always be spliced, regardless
+# of what you use here. 
+squid_intercept_method: splice
+
+# If set to true, only hosts added to tunneled.txt (https only) or whitelisted.txt
+# (both http and https) will be allowed through the proxy.
+squid_use_whitelist: true
+
+
+## Upstream proxy settings
+#
+# Whether or not we should proxy all requests to an upstream (parent) proxy
+squid_use_cache_peer: false
+
+# The parent proxy HTTP port
+squid_peer_http_port: 3130
+
+# The parent proxy hostname. Both this setting and the squid_use_cache_peer need to
+# be properly set, in order to use this feature.
+# squid_peer_hostname: replaceme.example.com
+
+# If authentication is enabled, both this setting and the password must be set.
+# squid_peer_username: JohnDoe
+
+# The password for the parent proxy.
+# squid_peer_password: SuperSecretPassword
+

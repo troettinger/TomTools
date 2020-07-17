@@ -1,0 +1,294 @@
+---                                                                                                 
+- hosts: squid
+  remote_user: root
+  vars:
+    ca_file_path: '{{ ssl_ca_bundle | default("/tmp/squid-ca.pem", true)}}'
+    ca_file_name: '{{ ca_file_path | basename }}'
+    ca_dir_name: '{{ ca_file_path | dirname }}'
+    squid_conf: '{{ squid_config | default("/etc/squid/squid.conf", true) }}'
+    squid_port_var: '{{ squid_port | default("3128", true) }}'
+    ca_destination: '{{ ssl_ca_destination | default("/etc/squid/certs", true) }}'
+    select_crypto_backend: '{{ crypto_backend | default("auto", true)}}'
+    ssl_db_dir_var: '{{ ssl_db_dir | default("/etc/squid/ssl_db", true) }}'
+    http_port: '{{ squid_http_port | default("3130", true) }}'
+    https_port: '{{ squid_https_port | default("3129", true) }}'
+    control_port: '{{ squid_control_port | default("3128", true) }}'
+    intercept_method: '{{ squid_intercept_method | default("splice", true) }}'
+    use_whitelist: '{{ squid_use_whitelist | default(false, true) }}'
+    use_cache_peer: '{{ squid_use_cache_peer | default(false, true) }}'
+    peer_http_port: '{{ squid_peer_http_port | default("8080", true) }}'
+    peer_username: '{{ squid_peer_username | default(false, true) }}'
+    peer_password: '{{ squid_peer_password | default(false, true) }}'
+    peer_hostname: '{{ squid_peer_hostname | default(false, true) }}'
+  tasks:
+    - name: Create CA dir if missing
+      file:
+        path: '{{ ca_dir_name }}'
+        state: directory
+        mode: '0700'
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Check if CA exists
+      stat:
+        path: '{{ ca_file_path }}'
+      register: cafileexists
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Create temporary directory for CA files
+      tempfile:
+        state: directory
+        suffix: build
+      when: cafileexists.stat.exists == False
+      delegate_to: 127.0.0.1
+      register: tempdircreated
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate CA privatekey
+      openssl_privatekey:
+        path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+      register: cagenerated
+      delegate_to: 127.0.0.1
+      run_once: true
+      when: tempdircreated.changed
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate CA CSR
+      openssl_csr:
+        path: '{{ tempdircreated.path }}/ca_csr.csr'
+        privatekey_path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+        subject:
+          commonName: '{{ common_name }}'
+        useCommonNameForSAN: no
+        basic_constraints:
+        - 'CA:TRUE'
+        basic_constraints_critical: yes
+      when: cagenerated.changed
+      register: csrgenerated
+      run_once: true
+      delegate_to: 127.0.0.1
+
+    - name: (OwnCA, {{select_crypto_backend}}) Generate selfsigned CA certificate
+      openssl_certificate:
+        path: '{{ tempdircreated.path }}/ca_cert.pem'
+        csr_path: '{{ tempdircreated.path }}/ca_csr.csr'
+        privatekey_path: '{{ tempdircreated.path }}/ca_privatekey.pem'
+        provider: selfsigned
+        selfsigned_digest: sha256
+        select_crypto_backend: '{{ select_crypto_backend }}'
+      when: csrgenerated.changed
+      register: certgenerated
+      run_once: true
+      delegate_to: 127.0.0.1
+
+    - name: Remove file (delete file)
+      file:
+        path: '{{ tempdircreated.path }}/ca_csr.csr'
+        state: absent
+      when: certgenerated.changed
+      delegate_to: 127.0.0.1
+      register: removedcsr
+      run_once: true
+
+    - name: Combine CA cert and key
+      assemble:
+        src: '{{ tempdircreated.path }}'
+        dest: '{{ ca_file_path }}'
+      when: removedcsr.changed
+      delegate_to: 127.0.0.1
+      run_once: true
+
+    - name: Install firewalld
+      package:
+        name: firewalld
+        state: present
+
+    - name: Enable firewalld
+      service:
+        state: started
+        name: firewalld
+        enabled: yes
+
+    - name: Install Squid proxy server
+      package:
+        name: squid
+        state: present
+      register: squidPackage
+
+    - name: "Redirect port 443 to {{ https_port }}"
+      firewalld:
+        rich_rule: rule family={{ item }} forward-port port=443 protocol=tcp to-port={{ https_port }}
+        zone: public
+        permanent: yes
+        immediate: yes
+        state: enabled
+      with_items:
+        - ipv4
+        - ipv6
+
+    - name: "Redirect port 80 to {{ http_port }}"
+      firewalld:
+        rich_rule: rule family={{ item }} forward-port port=80 protocol=tcp to-port={{ http_port }}
+        zone: public
+        permanent: yes
+        immediate: yes
+        state: enabled
+      with_items:
+        - ipv4
+        - ipv6
+
+    - name: Open https port
+      firewalld:
+        port: 443/tcp
+        zone: public
+        permanent: yes
+        state: enabled
+
+    - name: Open http port
+      firewalld:
+        port: 80/tcp
+        zone: public
+        permanent: yes
+        state: enabled
+
+    - name: "Open squid HTTP port {{ http_port }}"
+      firewalld:
+        port: '{{ http_port }}/tcp'
+        zone: public
+        permanent: yes
+        state: enabled
+
+    - name: "Open squid HTTPS port {{ https_port }}"
+      firewalld:
+        port: '{{ https_port }}/tcp'
+        zone: public
+        permanent: yes
+        state: enabled
+
+    - name: "Open squid control port {{ control_port }}"
+      firewalld:
+        port: '{{ control_port }}/tcp'
+        zone: public
+        permanent: yes
+        state: enabled
+
+    # It will be managed by pacemaker
+    - name: Disable squid service
+      service:
+        state: stopped
+        name: squid
+        enabled: no
+      when: squidPackage.changed
+
+    - name: Create certs dir
+      file:
+        path: '{{ ca_destination }}'
+        state: directory
+        mode: '0711'
+        owner: '{{ squid_username }}'
+
+    - name: Create Squid pid dir
+      file:
+        path: '/var/run/squid'
+        state: directory
+        mode: '0711'
+        owner: '{{ squid_username }}'
+
+    - name: Copy CA certificate
+      copy:
+        src: '{{ ca_file_path }}'
+        dest: '{{ ca_destination }}/{{ ca_file_name }}'
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+        mode: '0640'
+      notify:
+        - restart Squid resource
+
+    - name: Copy Squid whitelist
+      copy:
+        src: 'files/whitelisted.txt'
+        dest: '/etc/squid/whitelisted.txt'
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+        mode: '0640'
+      register: whitelist
+      notify:
+        - restart Squid resource
+
+    - name: Copy Squid tunnel whitelist
+      copy:
+        src: 'files/tunneled.txt'
+        dest: '/etc/squid/tunneled.txt'
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+        mode: '0640'
+      register: tunneled
+      notify:
+        - restart Squid resource
+
+    - name: Copy Squid broken but trusted whitelist
+      copy:
+        src: 'files/broken-but-trusted.txt'
+        dest: '/etc/squid/broken-but-trusted.txt'
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+        mode: '0640'
+      register: brokenbuttrusted
+      notify:
+        - restart Squid resource
+
+    - name: Generate /etc/squid/squid.conf
+      template:
+        src: 'templates/squid.conf.j2'
+        dest: "/etc/squid/squid.conf"
+      register: squidconf
+      notify:
+        - restart Squid resource
+
+    - name: Check ssl_db dir
+      stat:
+        path: '{{ ssl_db_dir_var }}'
+      register: ssldb
+
+    - name: Initialize ssl_db dir
+      command: /usr/lib64/squid/security_file_certgen -c -s '{{ ssl_db_dir_var }}' -M 4MB
+      when: ssldb.stat.exists == False
+
+    - name: Change owner for ssl_db
+      file:
+        path: '{{ ssl_db_dir_var }}'
+        state: directory
+        recurse: yes
+        owner: '{{ squid_username }}'
+        group: '{{ squid_username }}'
+
+    - name: Create VIP resource
+      pcs_resource:
+        name: VIP
+        resource_type: 'ocf:heartbeat:IPaddr2'
+        options: '--group squid ip={{cluster_vip}} cidr_netmask={{cluster_vip_mask}} op monitor interval=5'
+      run_once: true
+
+    - name: Create Squid resource
+      pcs_resource:
+        name: Squid
+        resource_type: 'ocf:heartbeat:Squid'
+        options: '--group squid squid_exe="/usr/sbin/squid" squid_conf="{{ squid_conf }}" squid_pidfile="/var/run/squid/squid.pid" squid_port="{{ squid_port_var }}" squid_stop_timeout="30" op start interval="0" timeout="60s" op stop interval="0" timeout="120s" op monitor interval="1s" timeout="30s" meta target-role="Started"'
+      run_once: true
+      register: squidresource
+
+#    - name: Restart Squid resource
+#      command: /usr/sbin/pcs resource restart Squid
+#      when: whitelist.changed or tunneled.changed or squidconf.changed or brokenbuttrusted.changed and not squidresource.changed
+#      run_once: true
+
+  roles:
+  - role: ondrejhome.ha-cluster-pacemaker
+    cluster_configure_fence_xvm: false
+    enable_repos: true
+    cluster_firewall: true
+    enable_stonith: false
+
+  handlers:
+    - name: restart Squid resource
+      command: /usr/sbin/pcs resource restart Squid
+      run_once: true

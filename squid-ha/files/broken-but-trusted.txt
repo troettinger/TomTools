@@ -1,0 +1,4 @@
+download.microsoft.com
+update.microsoft.com
+update.microsoft.com.akadns.net
+update.microsoft.com.nsatc.net
