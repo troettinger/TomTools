@@ -1,0 +1,141 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "customLocationId": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "securityType": {
+            "type": "string"
+        },
+        "domainToJoin": {
+            "type": "string"
+        },
+        "orgUnitPath": {
+            "defaultValue": "",
+            "type": "string"
+        },
+        "domainUsername": {
+            "type": "string"
+        },
+        "domainPassword": {
+            "type": "securestring"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.HybridCompute/machines",
+            "apiVersion": "2023-06-20-preview",
+            "name": "MSX01",
+            "kind": "HCI",
+            "location": "eastus",
+            "identity": {
+                "type": "SystemAssigned"
+            }
+        },
+        {
+            "name": "msx01",
+            "type": "Microsoft.AzureStackHCI/networkInterfaces",
+            "apiVersion": "2025-04-01-preview",
+            "location": "[parameters('location')]",
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "msx01",
+                        "properties": {
+                            "gateway": "100.69.161.1",
+                            "privateIPAddress": "100.69.161.6",
+                            "subnet": {
+                                "id": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/microsoft.azurestackhci/logicalNetworks/Backend"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.AzureStackHCI/VirtualMachineInstances",
+            "apiVersion": "2025-04-01-preview",
+            "scope": "[concat('Microsoft.HybridCompute/machines', '/', 'MSX01')]",
+            "name": "default",
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/Microsoft.ExtendedLocation/customLocations/munich"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.HybridCompute/machines','MSX01')]",
+                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+            ],
+            "properties": {
+                "osProfile": {
+                    "adminUsername": "m365admin",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "computerName": "MSX01",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "provisionVMConfigAgent": true
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "Default",
+                    "processors": 32,
+                    "memoryMB": 262144
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/microsoft.azurestackhci/marketplaceGalleryImages/2025-datacenter-azure-edition-01"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+                        }
+                    ]
+                },
+                "httpProxyConfig": {}
+            }
+        },
+        {
+            "type": "Microsoft.HybridCompute/machines/extensions",
+            "apiVersion": "2023-06-20-preview",
+            "name": "[concat(parameters('name'),'/joindomain')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.HybridCompute/machines', parameters('name')), '/providers/Microsoft.AzureStackHCI/virtualmachineinstances/default')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "Name": "[parameters('domainToJoin')]",
+                    "OUPath": "[parameters('orgUnitPath')]",
+                    "User": "[concat(parameters('domainToJoin'), '\\', parameters('domainUsername'))]",
+                    "Restart": "true",
+                    "Options": "3"
+                },
+                "protectedSettings": {
+                    "Password": "[parameters('domainPassword')]"
+                }
+            }
+        }
+    ]
+}
