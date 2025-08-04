@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.1.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "proxyAddress": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "proxyUsername": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "proxyPassword": {
+            "type": "secureString",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "proxySettings": {
+            "proxy": {
+                "mode": "application",
+                "address": "[parameters('proxyAddress')]",
+                "auth": "[not(equals(parameters('proxyUsername'), ''))]"
+            }
+        },
+        "proxyAuthSettings": {
+            "proxy": {
+                "username": "[parameters('proxyUserName')]",
+                "password": "[parameters('proxyPassword')]"
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('vmName'),'/AzureEdgeDeviceManagement')]",
+            "type": "Microsoft.HybridCompute/machines/extensions",
+            "location": "[parameters('location')]",
+            "apiVersion": "2021-05-20",
+            "properties": {
+                "publisher": "Microsoft.Edge",
+                "type": "DeviceManagementExtension",
+                "autoUpgradeMinorVersion": true,
+                "enableAutomaticUpgrade": true,
+                "settings": "[if(equals(parameters('proxyAddress'),''), json('null'),  variables('proxySettings'))]",
+                "protectedSettings": "[if(equals(parameters('proxyUserName'),''), json('null'), variables('proxyAuthSettings'))]"
+            }
+        }
+    ]
+}
