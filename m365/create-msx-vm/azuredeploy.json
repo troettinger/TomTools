@@ -32,6 +32,18 @@
         },
         "domainPassword": {
             "type": "securestring"
+        },
+        "CPU": {
+            "type": "securestring"
+        },
+        "Memory": {
+            "type": "securestring"
+        },
+        "IP": {
+            "type": "securestring"
+        },
+        "GWIP": {
+            "type": "securestring"
         }
     },
     "resources": [
@@ -59,8 +71,8 @@
                     {
                         "name": "msx01",
                         "properties": {
-                            "gateway": "100.69.161.1",
-                            "privateIPAddress": "100.69.161.6",
+                            "gateway": "[parameters('GWIP')]",
+                            "privateIPAddress": "[parameters('IP')]",
                             "subnet": {
                                 "id": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/microsoft.azurestackhci/logicalNetworks/Backend"
                             }
@@ -94,8 +106,8 @@
                 },
                 "hardwareProfile": {
                     "vmSize": "Default",
-                    "processors": 32,
-                    "memoryMB": 262144
+                    "processors": "[parameters('CPU')]",
+                    "memoryMB": "[parameters('Memory')]"
                 },
                 "storageProfile": {
                     "imageReference": {

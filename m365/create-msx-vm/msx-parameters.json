@@ -29,6 +29,18 @@
         },
         "domainPassword": {
             "value": null
+        },
+        "CPU": {
+            "value": "32"
+        },
+        "Memory": {
+            "value": "262144"
+        },
+        "IP": {
+            "value": "100.69.161.6"
+        },
+        "GWIP": {
+            "value": "100.69.161.1"
         }
     }
 }
