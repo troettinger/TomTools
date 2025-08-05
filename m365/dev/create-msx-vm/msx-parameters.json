@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "MSX01"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "customLocationId": {
+            "value": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/Microsoft.ExtendedLocation/customLocations/munich"
+        },
+        "adminUsername": {
+            "value": "m365admin"
+        },
+        "securityType": {
+            "value": "Standard"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "domainToJoin": {
+            "value": "s46r1401.masd.stbtest.microsoft.com"
+        },
+        "orgUnitPath": {},
+        "domainUsername": {
+            "value": "hcideploymentuser"
+        },
+        "domainPassword": {
+            "value": null
+        },
+        "CPU": {
+            "value": "32"
+        },
+        "Memory": {
+            "value": "262144"
+        },
+        "IP": {
+            "value": "100.69.161.6"
+        },
+        "GWIP": {
+            "value": "100.69.161.1"
+        }
+    }
+}

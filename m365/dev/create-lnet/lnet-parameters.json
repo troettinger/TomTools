@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "Backend"
+        },
+        "ipAllocationMethod": {
+            "value": "Static"
+        },
+        "addressPrefix": {
+            "value": "100.69.161.0/24"
+        },
+        "vlan": {
+            "value": 201
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "customLocationId": {
+            "value": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourcegroups/m365localrg/providers/microsoft.extendedlocation/customlocations/munich"
+        },
+        "vmSwitchName": {
+            "value": "ConvergedSwitch(compute_management)"
+        },
+        "tags": {
+            "value": {}
+        },
+        "ipPools": {
+            "value": [
+                {
+                    "start": "100.69.161.6",
+                    "end": "100.69.161.31"
+                }
+            ]
+        },
+        "dnsServers": {
+            "value": [
+                "100.71.83.125"
+            ]
+        },
+        "defaultGateway": {
+            "value": "100.69.161.1"
+        }
+    }
+}
