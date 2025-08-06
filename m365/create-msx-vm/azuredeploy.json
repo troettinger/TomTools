@@ -50,7 +50,7 @@
         {
             "type": "Microsoft.HybridCompute/machines",
             "apiVersion": "2023-06-20-preview",
-            "name": "MSX01",
+            "name": "[parameters('name')]",
             "kind": "HCI",
             "location": "eastus",
             "identity": {
@@ -58,7 +58,7 @@
             }
         },
         {
-            "name": "msx01",
+            "name": "[parameters('name')]",
             "type": "Microsoft.AzureStackHCI/networkInterfaces",
             "apiVersion": "2025-04-01-preview",
             "location": "[parameters('location')]",
@@ -84,21 +84,21 @@
         {
             "type": "Microsoft.AzureStackHCI/VirtualMachineInstances",
             "apiVersion": "2025-04-01-preview",
-            "scope": "[concat('Microsoft.HybridCompute/machines', '/', 'MSX01')]",
+            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('name')]",
             "name": "default",
             "extendedLocation": {
                 "type": "CustomLocation",
-                "name": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/Microsoft.ExtendedLocation/customLocations/munich"
+                "name": "[parameters('customLocationId')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.HybridCompute/machines','MSX01')]",
-                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+                "[resourceId('Microsoft.HybridCompute/machines',parameters('name'))]",
+                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
             ],
             "properties": {
                 "osProfile": {
                     "adminUsername": "m365admin",
                     "adminPassword": "[parameters('adminPassword')]",
-                    "computerName": "MSX01",
+                    "computerName": "[parameters('name')]",
                     "windowsConfiguration": {
                         "provisionVMAgent": true,
                         "provisionVMConfigAgent": true
@@ -117,7 +117,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
                         }
                     ]
                 },

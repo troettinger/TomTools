@@ -198,7 +198,7 @@
 }
 },
 {
-"name": "msx01",
+"name": "[parameters('name')]",
 "type": "Microsoft.AzureStackHCI/networkInterfaces",
 "apiVersion": "2025-04-01-preview",
 "location": "[parameters('location')]",
@@ -242,7 +242,7 @@
 "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('name'), '-datadisk8'))]",
 "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('name'), '-datadisk9'))]",
 "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('name'), '-datadisk10'))]",
-"[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+"[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
 ],
 "properties": {
 "osProfile": {
@@ -299,7 +299,7 @@
 "networkProfile": {
 "networkInterfaces": [
 {
-"id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
+"id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
 }
 ]
 },
