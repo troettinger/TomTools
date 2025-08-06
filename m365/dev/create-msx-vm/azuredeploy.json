@@ -232,6 +232,16 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.HybridCompute/machines','MSX01')]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk1')]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk2)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk3)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk4)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk5)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk6)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk7)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk8)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk9)]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk10)]",
                 "[resourceid('Microsoft.AzureStackHCI/networkInterfaces','msx01')]"
             ],
             "properties": {
@@ -252,7 +262,21 @@
                 "storageProfile": {
                     "imageReference": {
                         "id": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/microsoft.azurestackhci/marketplaceGalleryImages/2025-datacenter-azure-edition-01"
-                    }
+                    },
+                     "dataDisks": [
+                        {
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk1')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk2')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk3')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk4')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk5')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk6')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk7')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk8')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk9')]",
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks','datadisk10')]"
+                        }
+                    ]
                 },
                 "networkProfile": {
                     "networkInterfaces": [
