@@ -69,12 +69,12 @@
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "msx01",
+                        "name": "[parameters('name')]",
                         "properties": {
                             "gateway": "[parameters('GWIP')]",
                             "privateIPAddress": "[parameters('IP')]",
                             "subnet": {
-                                "id": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourceGroups/m365localRG/providers/microsoft.azurestackhci/logicalNetworks/Backend"
+                                "id": "[resourceId('microsoft.azurestackhci/logicalnetworks', 'Backend')]"
                             }
                         }
                     }

@@ -214,7 +214,7 @@
 "gateway": "[parameters('GWIP')]",
 "privateIPAddress": "[parameters('IP')]",
 "subnet": {
-"id": "/subscriptions/6a260d98-e0de-4b8d-9f3a-b7c10c8704df/resourceGroups/EDGECI-REGISTRATION-HC1n22r1815-2ypBQ5or/providers/microsoft.azurestackhci/logicalnetworks/m365Backend"
+"id": "[resourceId('microsoft.azurestackhci/logicalnetworks', 'm365Backend')]"
 }
 }
 }
