@@ -84,7 +84,7 @@
         {
             "type": "Microsoft.AzureStackHCI/VirtualMachineInstances",
             "apiVersion": "2025-04-01-preview",
-            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('name')]",
+            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('name'))]",
             "name": "default",
             "extendedLocation": {
                 "type": "CustomLocation",
