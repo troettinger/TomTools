@@ -8,7 +8,7 @@
         "location": {
             "value": "eastus"
         },
-        "customLocationId": {
+        "ExtendedLocation": {
             "value": ""
         },
         "adminUsername": {

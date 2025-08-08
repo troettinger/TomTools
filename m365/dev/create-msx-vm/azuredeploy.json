@@ -8,7 +8,7 @@
         "location": {
             "type": "string"
         },
-        "customLocationId": {
+        "ExtendedLocation": {
             "type": "string"
         },
         "adminUsername": {
@@ -64,7 +64,7 @@
                 "name": "datadiskLoop",
                 "count": "[parameters('NumberDataDisks')]"
             },
-            "name": "[concat(parameters('VmName'), '-datadisk', copyIndex())]",
+            "name": "[concat(parameters('VmName'), '-datadisk', copyIndex('datadiskLoop'))]",
             "type": "Microsoft.AzureStackHCI/virtualHardDisks",
             "apiVersion": "2025-04-01-preview",
             "location": "[parameters('location')]",
@@ -74,7 +74,7 @@
             },
             "extendedLocation": {
                 "type": "CustomLocation",
-                "name": "[parameters('customLocationId')]"
+                "name": "[parameters('ExtendedLocation')]"
             }
         },
         {
@@ -94,7 +94,7 @@
             "location": "[parameters('location')]",
             "extendedLocation": {
                 "type": "CustomLocation",
-                "name": "[parameters('customLocationId')]"
+                "name": "[parameters('ExtendedLocation')]"
             },
             "properties": {
                 "ipConfigurations": [
@@ -118,7 +118,7 @@
             "name": "default",
             "extendedLocation": {
                 "type": "CustomLocation",
-                "name": "[parameters('customLocationId')]"
+                "name": "[parameters('ExtendedLocation')]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.HybridCompute/machines', parameters('VmName'))]",
@@ -149,7 +149,7 @@
                             "name": "dataDisks",
                             "count": "[parameters('NumberDataDisks')]",
                             "input": {
-                                "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('VmName'), '-datadisk', copyIndex()))]"
+                                "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('VmName'), '-datadisk', copyIndex('dataDisks')))]"
                             }
                         }
                     ]
