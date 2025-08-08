@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "name": {
+        "VmName": {
             "type": "string"
         },
         "location": {
@@ -64,7 +64,7 @@
                 "name": "datadiskLoop",
                 "count": "[parameters('NumberDataDisks')]"
             },
-            "name": "[concat(parameters('name'), '-datadisk', copyIndex())]",
+            "name": "[concat(parameters('VmName'), '-datadisk', copyIndex())]",
             "type": "Microsoft.AzureStackHCI/virtualHardDisks",
             "apiVersion": "2025-04-01-preview",
             "location": "[parameters('location')]",
@@ -80,7 +80,7 @@
         {
             "type": "Microsoft.HybridCompute/machines",
             "apiVersion": "2023-06-20-preview",
-            "name": "[parameters('name')]",
+            "name": "[parameters('VmName')]",
             "kind": "HCI",
             "location": "[parameters('location')]",
             "identity": {
@@ -88,7 +88,7 @@
             }
         },
         {
-            "name": "[parameters('name')]",
+            "name": "[parameters('VmName')]",
             "type": "Microsoft.AzureStackHCI/networkInterfaces",
             "apiVersion": "2025-04-01-preview",
             "location": "[parameters('location')]",
@@ -99,12 +99,12 @@
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "[parameters('name')]",
+                        "name": "[parameters('VmName')]",
                         "properties": {
                             "gateway": "[parameters('GWIP')]",
                             "privateIPAddress": "[parameters('IP')]",
                             "subnet": {
-                                "id": "[resourceId('microsoft.azurestackhci/logicalnetworks', 'parameters('LogicalNetworkName')')]"
+                                "id": "[resourceId('microsoft.azurestackhci/logicalnetworks', parameters('LogicalNetworkName'))]"
                             }
                         }
                     }
@@ -114,22 +114,22 @@
         {
             "type": "Microsoft.AzureStackHCI/VirtualMachineInstances",
             "apiVersion": "2025-04-01-preview",
-            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('name'))]",
+            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('VmName'))]",
             "name": "default",
             "extendedLocation": {
                 "type": "CustomLocation",
                 "name": "[parameters('customLocationId')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.HybridCompute/machines', parameters('name'))]",
+                "[resourceId('Microsoft.HybridCompute/machines', parameters('VmName'))]",
                 "datadiskLoop",
-                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
+                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('VmName'))]"
             ],
             "properties": {
                 "osProfile": {
                     "adminUsername": "m365admin",
                     "adminPassword": "[parameters('adminPassword')]",
-                    "computerName": "[parameters('name')]",
+                    "computerName": "[parameters('VmName')]",
                     "windowsConfiguration": {
                         "provisionVMAgent": true,
                         "provisionVMConfigAgent": true
@@ -144,20 +144,20 @@
                     "imageReference": {
                         "id": "[parameters('ImageReference')]"
                     },
-                    "dataDisks": [
+                    "copy": [
                         {
-                            "copy": {
-                                "name": "dataDiskLoop",
-                                "count": "[parameters('NumberDataDisks')]"
-                            },
-                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('name'), '-datadisk', copyIndex()))]"
+                            "name": "dataDisks",
+                            "count": "[parameters('NumberDataDisks')]",
+                            "input": {
+                                "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('VmName'), '-datadisk', copyIndex()))]"
+                            }
                         }
                     ]
                 },
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('name'))]"
+                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('VmName'))]"
                         }
                     ]
                 },
@@ -167,10 +167,10 @@
         {
             "type": "Microsoft.HybridCompute/machines/extensions",
             "apiVersion": "2023-06-20-preview",
-            "name": "[concat(parameters('name'),'/joindomain')]",
+            "name": "[concat(parameters('VmName'),'/joindomain')]",
             "location": "eastus",
             "dependsOn": [
-                "[concat(resourceId('Microsoft.HybridCompute/machines', parameters('name')), '/providers/Microsoft.AzureStackHCI/virtualmachineinstances/default')]"
+                "[concat(resourceId('Microsoft.HybridCompute/machines', parameters('VmName')), '/providers/Microsoft.AzureStackHCI/virtualmachineinstances/default')]"
             ],
             "properties": {
                 "publisher": "Microsoft.Compute",
