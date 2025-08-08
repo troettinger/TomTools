@@ -2,35 +2,26 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "apiVersion": {
-            "value": "2025-04-01-preview"
-        },
-        "customLocationId": {
-            "value": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourcegroups/m365locallab/providers/microsoft.extendedlocation/customlocations/lab"
+        "customLocationName": {
+            "value": "GEN-UNIQUE"
         },
         "location": {
             "value": "eastus"
         },
         "imageName": {
-            "value": "2025-datacenter-azure-edition-02"
+            "value": "GEN-UNIQUE"
         },
         "osType": {
             "value": "Windows"
         },
-        "publisherId": {
-            "value": "microsoftwindowsserver"
-        },
-        "offerId": {
-            "value": "windowsserver"
-        },
-        "planId": {
-            "value": "2025-datacenter-azure-edition"
+        "imageURN": {
+            "value": "microsoftwindowsserver:windowsserver:2022-datacenter-azure-edition-core"
         },
         "skuVersion": {
-            "value": "26100.4652.250713"
+            "value": "latest"
         },
         "hyperVGeneration": {
-            "value": "V2"
+            "value": "v2"
         }
     }
 }
