@@ -20,14 +20,14 @@
         "adminPassword": {
             "value": null
         },
-        "domainToJoin": {
-            "value": "v.masd.stbtest.microsoft.com"
+        "DomainToJoin": {
+            "value": ""
         },
         "orgUnitPath": {},
-        "domainUsername": {
-            "value": "hcideploymentuser"
+        "DomainUsername": {
+            "value": ""
         },
-        "domainPassword": {
+        "DomainPassword": {
             "value": null
         },
         "CPU": {
