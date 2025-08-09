@@ -170,12 +170,12 @@
             "value": [
                 {
                     "name": "StorageNetwork1",
-                    "networkAdapterName": "Ethernet",
+                    "networkAdapterName": "Integrated NIC 1 Port 1-1",
                     "vlanId": "711"
                 },
                 {
                     "name": "StorageNetwork2",
-                    "networkAdapterName": "Ethernet 2",
+                    "networkAdapterName": "Integrated NIC 1 Port 2-1",
                     "vlanId": "712"
                 }
             ]
@@ -187,7 +187,7 @@
             "value": true
         },
         "customLocation": {
-            "value": "M365MSU"
+            "value": "M365CSUMBX"
         },
         "sbeVersion":{
             "value": ""
