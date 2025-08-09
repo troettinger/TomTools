@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "net_name": {
+            "value": ""
+        },
+        "ipAllocationMethod": {
+            "value": "Static"
+        },
+        "addressPrefix": {
+            "value": "192.168.201.0/24"
+        },
+        "vlan": {
+            "value": 0
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "customLocationId": {
+            "value": ""
+        },
+        "vmSwitchName": {
+            "value": "ConvergedSwitch(managementcomputestorage)"
+        },
+        "tags": {
+            "value": {}
+        },
+        "ipPools": {
+            "value": [
+                {
+                    "start": "192.168.201.106",
+                    "end": "192.168.201.115"
+                }
+            ]
+        },
+        "dnsServers": {
+            "value": [
+                "192.168.201.222"
+            ]
+        },
+        "defaultGateway": {
+            "value": "192.168.201.1"
+        }
+    }
+}

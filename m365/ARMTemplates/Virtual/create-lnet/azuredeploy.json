@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "net_name": {
+            "type": "string"
+        },
+        "ipAllocationMethod": {
+            "type": "string"
+        },
+        "addressPrefix": {
+            "type": "string"
+        },
+        "vlan": {
+            "type": "int"
+        },
+        "location": {
+            "type": "string"
+        },
+        "customLocationId": {
+            "type": "string"
+        },
+        "vmSwitchName": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "Object"
+        },
+        "ipPools": {
+            "type": "Array"
+        },
+        "dnsServers": {
+            "type": "Array"
+        },
+        "defaultGateway": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "microsoft.azurestackhci/logicalnetworks",
+            "apiVersion": "2025-04-01-preview",
+            "name": "[parameters('net_name')]",
+            "location": "[parameters('location')]",
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            },
+            "tags": {},
+            "properties": {
+                "subnets": [
+                    {
+                        "name": "[parameters('net_name')]",
+                        "properties": {
+                            "ipAllocationMethod": "[parameters('ipAllocationMethod')]",
+                            "addressPrefix": "[parameters('addressPrefix')]",
+                            "vlan": "[parameters('vlan')]",
+                            "ipPools": "[parameters('ipPools')]",
+                            "routeTable": {
+                                "properties": {
+                                    "routes": [
+                                        {
+                                            "name": "[parameters('net_name')]",
+                                            "properties": {
+                                                "addressPrefix": "0.0.0.0/0",
+                                                "nextHopIpAddress": "[parameters('defaultGateway')]"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ],
+                "vmSwitchName": "[parameters('vmSwitchName')]",
+                "dhcpOptions": {
+                    "dnsServers": "[parameters('dnsServers')]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
