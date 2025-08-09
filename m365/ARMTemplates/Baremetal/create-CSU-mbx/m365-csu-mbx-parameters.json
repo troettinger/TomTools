@@ -42,7 +42,7 @@
             "value": null
         },
         "AzureStackLCMAdminUsername": {
-            "value": "hcideploymentuser"
+            "value": "hcideploymentuser2"
         },
         "AzureStackLCMAdminPasssword": {
             "value": null
@@ -187,7 +187,7 @@
             "value": true
         },
         "customLocation": {
-            "value": "M365CSUMBX"
+            "value": "M365CSUMBX1"
         },
         "sbeVersion":{
             "value": ""

@@ -42,7 +42,7 @@
             "value": null
         },
         "AzureStackLCMAdminUsername": {
-            "value": "hcideploymentuser"
+            "value": "hcideploymentuser3"
         },
         "AzureStackLCMAdminPasssword": {
             "value": null
