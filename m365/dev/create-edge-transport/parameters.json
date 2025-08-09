@@ -2,14 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VmName": {
+        "vmName": {
             "value": ""
         },
         "location": {
             "value": "eastus"
         },
-        "ExtendedLocation": {
-            "value": ""
+        "customLocationId": {
+            "value": "/subscriptions/6a260d98-e0de-4b8d-9f3a-b7c10c8704df/resourceGroups/EDGECI-REGISTRATION-HC1n22r1815-2ypBQ5or/providers/Microsoft.ExtendedLocation/customLocations/s-cluster-customlocation"
         },
         "adminUsername": {
             "value": "m365admin"
@@ -20,21 +20,11 @@
         "adminPassword": {
             "value": null
         },
-        "DomainToJoin": {
-            "value": ""
-        },
-        "orgUnitPath": {},
-        "DomainUsername": {
-            "value": ""
-        },
-        "DomainPassword": {
-            "value": null
-        },
         "CPU": {
-            "value": 8
+            "value": 4
         },
         "Memory": {
-            "value": 16384
+            "value": 8192
         },
         "IP": {
             "value": ""
@@ -43,16 +33,7 @@
             "value": "192.168.200.1"
         },
         "LogicalNetworkName": {
-            "value": ""
-        },
-        "ImageReference": {
-            "value": ""
-        },
-        "NumberDataDisks": {
-            "value": 10
-        },
-        "DiskSizeGB": {
-            "value": 127
+            "value" : ""
         }
     }
 }

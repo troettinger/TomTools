@@ -1,0 +1,156 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "customLocationId": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "securityType": {
+            "type": "string"
+        },
+        "CPU": {
+            "type": "int"
+        },
+        "Memory": {
+            "type": "int"
+        },
+        "IP": {
+            "type": "string"
+        },
+        "GWIP": {
+            "type": "string"
+        },
+        "LogicalNetworkName" : {
+            "type" : "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.HybridCompute/machines",
+            "apiVersion": "2023-06-20-preview",
+            "name": "[parameters('vmName')]",
+            "kind": "HCI",
+            "location": "eastus",
+            "identity": {
+                "type": "SystemAssigned"
+            }
+        },
+        {
+            "name": "[concat(parameters('vmName'), '-datadisk1')]",
+            "type": "Microsoft.AzureStackHCI/virtualHardDisks",
+            "apiVersion": "2025-04-01-preview",
+            "location": "[parameters('location')]",
+            "properties": {
+                "diskSizeGB": 127,
+                "dynamic": true
+            },
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('vmName'), '-datadisk2')]",
+            "type": "Microsoft.AzureStackHCI/virtualHardDisks",
+            "apiVersion": "2025-04-01-preview",
+            "location": "[parameters('location')]",
+            "properties": {
+                "diskSizeGB": 127,
+                "dynamic": true
+            },
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            }
+        },
+        {
+            "name": "[parameters('vmName')]",
+            "type": "Microsoft.AzureStackHCI/networkInterfaces",
+            "apiVersion": "2025-04-01-preview",
+            "location": "[parameters('location')]",
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[parameters('vmName')]",
+                        "properties": {
+                            "gateway": "[parameters('GWIP')]",
+                            "privateIPAddress": "[parameters('IP')]",
+                            "subnet": {
+                                "id": "[resourceId('microsoft.azurestackhci/logicalnetworks', parameters('LogicalNetworkName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.AzureStackHCI/VirtualMachineInstances",
+            "apiVersion": "2025-04-01-preview",
+            "scope": "[concat('Microsoft.HybridCompute/machines', '/', parameters('vmName'))]",
+            "name": "default",
+            "extendedLocation": {
+                "type": "CustomLocation",
+                "name": "[parameters('customLocationId')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.HybridCompute/machines',parameters('vmName'))]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('vmName'), '-datadisk1'))]",
+                "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('vmName'), '-datadisk2'))]",
+                "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('vmName'))]"
+            ],
+            "properties": {
+                "osProfile": {
+                    "adminUsername": "m365admin",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "computerName": "[parameters('vmName')]",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "provisionVMConfigAgent": true
+                    }
+                },
+                "hardwareProfile": {
+                    "vmSize": "Default",
+                    "processors": "[parameters('CPU')]",
+                    "memoryMB": "[parameters('Memory')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "id": "/subscriptions/6a260d98-e0de-4b8d-9f3a-b7c10c8704df/resourceGroups/EDGECI-REGISTRATION-HC1n22r1815-2ypBQ5or/providers/microsoft.azurestackhci/marketplacegalleryimages/2025-datacenter-azure-edition-02"
+                    },
+                    "dataDisks": [
+                        {
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('vmName'), '-datadisk1'))]"
+                        },
+                        {
+                            "id": "[resourceid('Microsoft.AzureStackHCI/virtualHardDisks', concat(parameters('vmName'), '-datadisk2'))]"
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceid('Microsoft.AzureStackHCI/networkInterfaces',parameters('vmName'))]"
+                        }
+                    ]
+                },
+                "httpProxyConfig": {}
+            }
+        }
+    ]
+}
