@@ -21,7 +21,7 @@
             "value": "Standard_LRS"
         },
         "clusterName": {
-            "value": "csu-et1"
+            "value": "csu-cl2"
         },
         "location": {
             "value": "eastus"
@@ -42,7 +42,7 @@
             "value": null
         },
         "AzureStackLCMAdminUsername": {
-            "value": "hcideploymentuser3"
+            "value": "hcideploymentuser2"
         },
         "AzureStackLCMAdminPasssword": {
             "value": null
@@ -52,7 +52,7 @@
         },
         "arcNodeResourceIds": {
             "value": [
-                "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.HybridCompute/machines/csu-et-n1"
+                "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.HybridCompute/machines/csu-msx-n2"
             ]
         },
         "domainFqdn": {
@@ -62,7 +62,7 @@
             "value": "M365"
         },
         "adouPath": {
-            "value": "OU=M365 CSU ET,DC=m365locallab,DC=com"
+            "value": "OU=M365 CSU MBX,DC=m365locallab,DC=com"
         },
         "securityLevel": {
             "value": "Recommended"
@@ -104,13 +104,13 @@
             "value": "255.255.255.0"
         },
         "defaultGateway": {
-            "value": "100.69.200.97"
+            "value": "100.69.200.1"
         },
         "startingIPAddress": {
-            "value": "100.69.200.101"
+            "value": "100.69.200.204"
         },
         "endingIPAddress": {
-            "value": "100.69.200.106"
+            "value": "100.69.200.209"
         },
         "dnsServers": {
             "value": [
@@ -123,8 +123,8 @@
         "physicalNodesSettings": {
             "value": [
                 {
-                    "name": "csu-et-n1",
-                    "ipv4Address": "100.69.200.100"
+                    "name": "csu-msx-n2",
+                    "ipv4Address": "100.69.200.203"
                 }
             ]
         },
@@ -187,7 +187,7 @@
             "value": true
         },
         "customLocation": {
-            "value": "M365CSUET"
+            "value": "M365CSUMBX2"
         },
         "sbeVersion":{
             "value": ""
