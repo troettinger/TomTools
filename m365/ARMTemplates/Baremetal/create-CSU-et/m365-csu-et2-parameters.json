@@ -1,0 +1,215 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploymentMode": {
+            "value": "Validate"
+        },
+        "keyVaultName": {
+            "value": "m365msukv"
+        },
+        "softDeleteRetentionDays": {
+            "value": 30
+        },
+        "diagnosticStorageAccountName": {
+            "value": "m365kvmsudiag"
+        },
+        "logsRetentionInDays": {
+            "value": 30
+        },
+        "storageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "clusterName": {
+            "value": "csu-et2"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "tenantId": {
+            "value": "d9b73d5e-a9d3-41ba-88c3-796a643e3edd"
+        },
+        "witnessType": {
+            "value": "Cloud"
+        },
+        "clusterWitnessStorageAccountName": {
+            "value": "m365msuwitness"
+        },
+        "localAdminUserName": {
+            "value": "administrator"
+        },
+        "localAdminPassword": {
+            "value": null
+        },
+        "AzureStackLCMAdminUsername": {
+            "value": "hcideploymentuser3"
+        },
+        "AzureStackLCMAdminPasssword": {
+            "value": null
+        },
+        "hciResourceProviderObjectID": {
+            "value": "f0e0e122-3f80-44ed-95d2-f56e6fdc514c"
+        },
+        "arcNodeResourceIds": {
+            "value": [
+                "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.HybridCompute/machines/csu-et-n2"
+            ]
+        },
+        "domainFqdn": {
+            "value": "m365locallab.com"
+        },
+        "namingPrefix": {
+            "value": "M365"
+        },
+        "adouPath": {
+            "value": "OU=M365 CSU ET,DC=m365locallab,DC=com"
+        },
+        "securityLevel": {
+            "value": "Recommended"
+        },
+        "driftControlEnforced": {
+            "value": true
+        },
+        "credentialGuardEnforced": {
+            "value": true
+        },
+        "smbSigningEnforced": {
+            "value": true
+        },
+        "smbClusterEncryption": {
+            "value": false
+        },
+        "bitlockerBootVolume": {
+            "value": true
+        },
+        "bitlockerDataVolumes": {
+            "value": true
+        },
+        "wdacEnforced": {
+            "value": true
+        },
+        "streamingDataClient": {
+            "value": true
+        },
+        "euLocation": {
+            "value": false
+        },
+        "episodicDataUpload": {
+            "value": true
+        },
+        "configurationMode": {
+            "value": "Express"
+        },
+        "subnetMask": {
+            "value": "255.255.255.0"
+        },
+        "defaultGateway": {
+            "value": "100.69.200.97"
+        },
+        "startingIPAddress": {
+            "value": "100.69.200.108"
+        },
+        "endingIPAddress": {
+            "value": "100.69.200.113"
+        },
+        "dnsServers": {
+            "value": [
+                "100.71.92.125"
+            ]
+        },
+        "useDhcp": {
+            "value": false
+        },
+        "physicalNodesSettings": {
+            "value": [
+                {
+                    "name": "csu-et-n2",
+                    "ipv4Address": "100.69.200.107"
+                }
+            ]
+        },
+        "networkingType": {
+            "value": "singleServerDeployment"
+        },
+        "networkingPattern": {
+            "value": "convergedManagementCompute"
+        },
+        "intentList": {
+            "value": [
+                {
+                    "name": "Compute_Management",
+                    "trafficType": [
+                        "Management",
+                        "Compute"
+                    ],
+                    "adapter": [
+                        "Integrated NIC 1 Port 1-1",
+                        "Integrated NIC 1 Port 2-1"
+                    ],
+                    "overrideVirtualSwitchConfiguration": false,
+                    "virtualSwitchConfigurationOverrides": {
+                        "enableIov": "",
+                        "loadBalancingAlgorithm": ""
+                    },
+                    "overrideQosPolicy": true,
+                    "qosPolicyOverrides": {
+                        "priorityValue8021Action_Cluster": "7",
+                        "priorityValue8021Action_SMB": "3",
+                        "bandwidthPercentage_SMB": "50"
+                    },
+                    "overrideAdapterProperty": true,
+                    "adapterPropertyOverrides": {
+                        "jumboPacket": "9014",
+                        "networkDirect": "Enabled",
+                        "networkDirectTechnology": "RoCEv2"
+                    }
+                }
+            ]
+        },
+        "storageNetworkList": {
+            "value": [
+                {
+                    "name": "StorageNetwork1",
+                    "networkAdapterName": "Integrated NIC 1 Port 1-1",
+                    "vlanId": "711"
+                },
+                {
+                    "name": "StorageNetwork2",
+                    "networkAdapterName": "Integrated NIC 1 Port 2-1",
+                    "vlanId": "712"
+                }
+            ]
+        },
+        "storageConnectivitySwitchless": {
+            "value": false
+        },
+        "enableStorageAutoIp": {
+            "value": true
+        },
+        "customLocation": {
+            "value": "M365CSUET"
+        },
+        "sbeVersion":{
+            "value": ""
+          },
+          "sbeFamily":{
+            "value": ""
+          },
+          "sbePublisher":{
+            "value": ""
+          },
+          "sbeManifestSource":{
+            "value": ""
+          },
+          "sbeManifestCreationDate":{
+            "value": ""
+          },
+          "partnerProperties": {
+            "value":[
+            ]
+          },
+        "partnerCredentiallist": {
+            "value": []
+          }
+    }
+}
