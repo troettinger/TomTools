@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "VMname": {
-            "value": "MSX01"
+            "value": "MBX01"
         },
         "location": {
             "value": "eastus"

@@ -6,13 +6,13 @@
             "value": "2025-04-01-preview"
         },
         "customLocationId": {
-            "value": "/subscriptions/86a43cee-777a-4d3e-b9bc-80d6a9c6c73c/resourcegroups/m365locallab/providers/microsoft.extendedlocation/customlocations/lab"
+            "value": "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.ExtendedLocation/customLocations/M365CSUET"
         },
         "location": {
             "value": "eastus"
         },
         "imageName": {
-            "value": "2025-datacenter-azure-edition-02"
+            "value": "2025-datacenter-azure-edition-01"
         },
         "osType": {
             "value": "Windows"

@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "net_name": {
+            "value": "csumbx2-compute"
+        },
+        "ipAllocationMethod": {
+            "value": "Static"
+        },
+        "addressPrefix": {
+            "value": "100.69.200.0/24"
+        },
+        "vlan": {
+            "value": 102
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "customLocationId": {
+            "value": "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.ExtendedLocation/customLocations/M365CSUMBX2"
+        },
+        "vmSwitchName": {
+            "value": "ConvergedSwitch(compute_management)"
+        },
+        "tags": {
+            "value": {}
+        },
+        "ipPools": {
+            "value": [
+                {
+                    "start": "100.69.200.38",
+                    "end": "100.69.200.39"
+                }
+            ]
+        },
+        "dnsServers": {
+            "value": [
+                "100.71.92.125"
+            ]
+        },
+        "defaultGateway": {
+            "value": "100.69.200.33"
+        }
+    }
+}

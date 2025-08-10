@@ -3,25 +3,25 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "net_name": {
-            "value": ""
+            "value": "csumbx3-compute"
         },
         "ipAllocationMethod": {
             "value": "Static"
         },
         "addressPrefix": {
-            "value": "192.168.201.0/24"
+            "value": "100.69.200.0/24"
         },
         "vlan": {
-            "value": 0
+            "value": 102
         },
         "location": {
             "value": "eastus"
         },
         "customLocationId": {
-            "value": ""
+            "value": "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.ExtendedLocation/customLocations/M365CSUMBX3"
         },
         "vmSwitchName": {
-            "value": "ConvergedSwitch(compute_management_storage)"
+            "value": "ConvergedSwitch(compute_management)"
         },
         "tags": {
             "value": {}
@@ -29,18 +29,18 @@
         "ipPools": {
             "value": [
                 {
-                    "start": "192.168.201.106",
-                    "end": "192.168.201.115"
+                    "start": "100.69.200.40",
+                    "end": "100.69.200.41"
                 }
             ]
         },
         "dnsServers": {
             "value": [
-                "192.168.201.222"
+                "100.71.92.125"
             ]
         },
         "defaultGateway": {
-            "value": "192.168.201.1"
+            "value": "100.69.200.33"
         }
     }
 }

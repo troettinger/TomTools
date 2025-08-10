@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apiVersion": {
+            "value": "2025-04-01-preview"
+        },
+        "customLocationId": {
+            "value": "/subscriptions/8718de60-667c-4a96-8f0e-1c27e2e79374/resourceGroups/M365LocalInfraRG/providers/Microsoft.ExtendedLocation/customLocations/M365MSU"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "imageName": {
+            "value": "2025-datacenter-azure-edition-02"
+        },
+        "osType": {
+            "value": "Windows"
+        },
+        "publisherId": {
+            "value": "microsoftwindowsserver"
+        },
+        "offerId": {
+            "value": "windowsserver"
+        },
+        "planId": {
+            "value": "2025-datacenter-azure-edition"
+        },
+        "skuVersion": {
+            "value": "26100.4652.250713"
+        },
+        "hyperVGeneration": {
+            "value": "V2"
+        }
+    }
+}

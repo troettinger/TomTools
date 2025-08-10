@@ -8,6 +8,12 @@
         "location": {
             "type": "string"
         },
+        "resourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the resource group"
+            }
+        },
         "customLocationId": {
             "type": "string"
         },
