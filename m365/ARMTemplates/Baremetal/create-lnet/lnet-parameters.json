@@ -21,7 +21,7 @@
             "value": ""
         },
         "vmSwitchName": {
-            "value": "ConvergedSwitch(managementcomputestorage)"
+            "value": "ConvergedSwitch(compute_management_storage)"
         },
         "tags": {
             "value": {}
